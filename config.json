@@ -1,14 +1,23 @@
 {
     "dateToGo": [
-        "20251105",
-        "20251106",
-        "20251107",
-        "20251111"
+        "20261105",
+        "20261106",
+        "20261107",
+        "20261111"
     ],
     "placeFrom": "KMG",
     "placeTo": "TNA",
     "flightWay": "Oneway",
     "sleepTime": 600,
     "priceStep": 50,
-    "SCKEY": ""
+    "SCKEY": "",
+    "searchType": 1,
+    "grade": 1,
+    "returnDate": "",
+    "passengerList": [
+        {
+            "passengerType": "Adult",
+            "passengerCount": 1
+        }
+    ]
 }

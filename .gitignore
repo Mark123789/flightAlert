@@ -25,6 +25,7 @@ MANIFEST
 
 # Virtual environments
 venv/
+.venv/
 ENV/
 env/
 
@@ -42,4 +43,9 @@ Thumbs.db
 # Application specific
 *.exe
 *.log
+*.log.*
+logs/
 config_backup.json
+
+# Local API probe responses
+artifacts/
