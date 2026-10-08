@@ -2,11 +2,15 @@
 
 from dataclasses import dataclass
 import logging
+from typing import Optional
 
 import requests
 
 PUSHPLUS_URL = "https://www.pushplus.plus/send"
 REQUEST_TIMEOUT = 25
+DEFAULT_TITLE = "航班含税价格提醒"
+PRICE_INCREASE_TITLE = "航班含税价格涨价"
+PRICE_DECREASE_TITLE = "航班含税价格降价"
 logger = logging.getLogger(__name__)
 
 
@@ -16,13 +20,24 @@ class NotificationResult:
     error: str = ""
 
 
-def send_notification(message: str, token: str, *, post=None) -> NotificationResult:
+def _title_for_message(message: str) -> str:
+    if "含税日历价上涨" in message:
+        return PRICE_INCREASE_TITLE
+    if "含税日历价下降" in message:
+        return PRICE_DECREASE_TITLE
+    return DEFAULT_TITLE
+
+
+def send_notification(message: str, token: str, *, title: Optional[str] = None,
+                      post=None) -> NotificationResult:
     if not token:
         return NotificationResult(False, "未配置推送令牌")
+    notification_title = title if title is not None else _title_for_message(message)
     post = post or requests.post
     try:
         response = post(PUSHPLUS_URL,
-                        json={"token": token, "title": "航班含税价格提醒", "content": message},
+                        json={"token": token, "title": notification_title,
+                              "content": message},
                         timeout=REQUEST_TIMEOUT)
         response.raise_for_status()
         data = response.json()
