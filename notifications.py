@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 import logging
+import re
 from typing import Optional
 
 import requests
@@ -20,19 +21,26 @@ class NotificationResult:
     error: str = ""
 
 
-def _title_for_message(message: str) -> str:
+def _title_for_message(message: str, title: Optional[str] = None) -> str:
     if "含税日历价上涨" in message:
-        return PRICE_INCREASE_TITLE
-    if "含税日历价下降" in message:
-        return PRICE_DECREASE_TITLE
-    return DEFAULT_TITLE
+        default_title = PRICE_INCREASE_TITLE
+    elif "含税日历价下降" in message:
+        default_title = PRICE_DECREASE_TITLE
+    else:
+        default_title = DEFAULT_TITLE
+
+    base_title = title if title is not None else default_title
+    prices = re.findall(r"CNY\s*([0-9]+(?:\.[0-9]+)?)", message)
+    if prices and "当前含税价格" not in base_title:
+        return f"{base_title}（当前含税价格 CNY {prices[-1]}）"
+    return base_title
 
 
 def send_notification(message: str, token: str, *, title: Optional[str] = None,
                       post=None) -> NotificationResult:
     if not token:
         return NotificationResult(False, "未配置推送令牌")
-    notification_title = title if title is not None else _title_for_message(message)
+    notification_title = _title_for_message(message, title)
     post = post or requests.post
     try:
         response = post(PUSHPLUS_URL,
