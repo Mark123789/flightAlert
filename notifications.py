@@ -10,8 +10,8 @@ import requests
 PUSHPLUS_URL = "https://www.pushplus.plus/send"
 REQUEST_TIMEOUT = 25
 DEFAULT_TITLE = "航班含税价格提醒"
-PRICE_INCREASE_TITLE = "航班含税价格涨价"
-PRICE_DECREASE_TITLE = "航班含税价格降价"
+PRICE_INCREASE_TITLE = "↑涨价"
+PRICE_DECREASE_TITLE = "⇣降价"
 logger = logging.getLogger(__name__)
 
 
@@ -32,7 +32,7 @@ def _title_for_message(message: str, title: Optional[str] = None) -> str:
     base_title = title if title is not None else default_title
     prices = re.findall(r"CNY\s*([0-9]+(?:\.[0-9]+)?)", message)
     if prices and "当前含税价格" not in base_title:
-        return f"{base_title}（当前含税价格 CNY {prices[-1]}）"
+        return f"{base_title}（当前CNY{prices[-1]}）"
     return base_title
 
 
